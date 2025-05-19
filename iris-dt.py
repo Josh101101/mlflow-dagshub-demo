@@ -28,9 +28,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 #Train a Random Forest classifier
 
 max_depth = 2
+n_estimators = 100
 
 
-mlflow.set_experiment("iris-dt")
+mlflow.set_experiment("iris-rf")
 
 # #apply mlflow to train
 
@@ -45,13 +46,15 @@ mlflow.set_experiment("iris-dt")
 
 
 with mlflow.start_run():
-    dt = RandomForestClassifier(max_depth=max_depth)
-    dt.fit(X_train, y_train)
-    y_pred  = dt.predict(X_test)
+    rf = RandomForestClassifier(max_depth=max_depth,n_estimators=n_estimators)
+    rf.fit(X_train, y_train)
+    y_pred  = rf.predict(X_test)
+    
     accuracy = accuracy_score(y_test, y_pred)
     
     mlflow.log_metric("accuracy", accuracy)
-    mlflow.log_param("max_depth", max_depth)    
+    mlflow.log_param("max_depth", max_depth) 
+    mlflow.log_param("n_estimators", n_estimators)   
     print('accuracy', accuracy)
     
     
@@ -72,7 +75,8 @@ with mlflow.start_run():
     # ml-flow code
     mlflow.log_artifact("confusion_matrix.png")
     mlflow.log_artifact(__file__)
-    mlflow.sklearn.log_model(dt, "decision_tree_model")
+    mlflow.sklearn.log_model(rf, "Random Forest Model")
+    mlflow.set_tag('algorithm', 'random-forest')
     mlflow.set_tag('author', 'adit')
     mlflow.set_tag('project', 'iris-classification')
     
